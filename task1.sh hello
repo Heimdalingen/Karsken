@@ -1,11 +1,13 @@
 #!/bin/bash
 
-# Fetch the current temperature for given coordinates
+# Fetch the current temperature for given coordinates using curl and process with sed/awk
 get_temperature() {
     local latitude="$1"
     local longitude="$2"
-    curl -s "https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=celsius&timezone=auto" \
-        | jq -r '.current_weather.temperature'
+    local response=$(curl -s "https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=celsius&timezone=auto")
+
+    # Use sed and awk to extract the temperature from the JSON response
+    echo "$response" | sed -n 's/.*"temperature":\([0-9.-]*\).*/\1/p'
 }
 
 # Download city data and load into an associative array
@@ -14,13 +16,16 @@ load_cities() {
     local file="norwegiancities.txt"
 
     # Download the file from the URL
-    curl -s -o "$file" "$url"
+    if ! curl -s -o "$file" "$url"; then
+        echo "Error: Unable to download city data."
+        exit 1
+    fi
 
     # Read the file and populate the associative array
     declare -gA cities
     while IFS=',' read -r city latitude longitude; do
         cities["$city"]="$latitude $longitude"
-    done < <(cat "$file")
+    done < "$file"
 }
 
 # Play the guessing game
@@ -31,6 +36,11 @@ play_game() {
 
     # Fetch the actual temperature
     actual_temperature=$(get_temperature "$latitude" "$longitude")
+
+    if [[ -z "$actual_temperature" ]]; then
+        echo "Error: Unable to fetch temperature for $selected_city."
+        return
+    fi
 
     # Introduction
     echo "Welcome to the Weather Guessing Game!"
@@ -49,15 +59,17 @@ play_game() {
 
         # Validate input and calculate the difference
         if [[ "$guess" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
-            difference=$(awk "BEGIN {print $actual_temperature - $guess}")
-            abs_difference=$(awk "BEGIN {print ($difference < 0) ? -$difference : $difference}")
+            # Safely pass variables to awk
+            difference=$(awk -v actual="$actual_temperature" -v user_guess="$guess" 'BEGIN {print actual - user_guess}')
+            abs_difference=$(awk -v diff="$difference" 'BEGIN {print (diff < 0) ? -diff : diff}')
 
-            if (( $(awk "BEGIN {print ($abs_difference <= 3) ? 1 : 0}") )); then
+            if (( $(awk -v abs_diff="$abs_difference" 'BEGIN {print (abs_diff <= 3) ? 1 : 0}') )); then
                 echo "Correct! The actual temperature in $selected_city is $actual_temperature°C."
                 return
             fi
 
-            echo "Your guess is too $( [[ $(awk "BEGIN {print ($difference > 0) ? 1 : 0}") == 1 ]] && echo "low" || echo "high" ). Try again!"
+            direction=$(awk -v diff="$difference" 'BEGIN {print (diff > 0) ? "low" : "high"}')
+            echo "Your guess is too $direction. Try again!"
         else
             echo "Invalid input. Please enter a number or 'give up'."
         fi
