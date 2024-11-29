@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Guessing Game</title>
+</head>
+<body>
+    <h1>Welcome to the Weather Guessing Game!</h1>
+    <p>Click the button below to start the Weather Guessing Game:</p>
+
+    <!-- Start Game Button -->
+    <form action="/cgi-bin/Weathergame.sh" method="post">
+        <input type="submit" value="Start Game">
+    </form>
+
+    <!-- Game Instructions (optional) -->
+    <h2>Game Instructions:</h2>
+    <ul>
+        <li>Guess the current temperature in a random Norwegian city.</li>
+        <li>Submit your guess and see if you were close!</li>
+    </ul>
+
+    <footer>
+        <p>Enjoy the game and good luck!</p>
+    </footer>
+</body>
+</html>
