@@ -1,5 +1,6 @@
 #!/bin/bash
 CPU_LOG=/home/chanyas/Documents/cronweather/cpu.log
+#HUSK Å LAGE EN LOG FILE
 
 echo "CPU Usage:"
 #top -bn1 | grep "Cpu(s)" | awk '{print "User: "$2"% Sys: "$4"% Idle: "$8"%"}' (this is a grep soution)
