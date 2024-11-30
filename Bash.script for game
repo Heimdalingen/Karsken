@@ -2,6 +2,9 @@
 echo "Content-type: text/html"
 echo ""
 
+# File to store leaderboard data
+LEADERBOARD_FILE="/var/www/eksamen/Weather_game/scores.txt"
+
 # Function to fetch the current temperature using the Open Meteo API
 get_temperature() {
     local lat="$1" lon="$2"
@@ -18,14 +21,32 @@ load_cities() {
     done < "/tmp/norwegiancities.txt"
 }
 
+# Function to display the leaderboard sorted by the closest guesses
+display_leaderboard() {
+    echo "<h2>Leaderboard</h2>"
+    if [ -f "$LEADERBOARD_FILE" ]; then
+        # Sort the leaderboard by the difference (5th column), in ascending order
+        sorted_scores=$(sort -t',' -k5n "$LEADERBOARD_FILE")
+        
+        echo "<table border='1'><tr><th>Username</th><th>City</th><th>Guess (°C)</th><th>Actual Temp (°C)</th><th>Difference (°C)</th></tr>"
+        while IFS=',' read -r username city guess actual_temp difference; do
+            echo "<tr><td>$username</td><td>$city</td><td>$guess</td><td>$actual_temp</td><td>$difference</td></tr>"
+        done <<< "$sorted_scores"
+        echo "</table>"
+    else
+        echo "<p>No leaderboard data available.</p>"
+    fi
+}
+
 # Read the form data (using POST)
 read -r POST_DATA <&0
 
-# Extract the guess and city parameters from the form submission
+# Extract the guess, city, and username parameters from the form submission
 guess=$(echo "$POST_DATA" | sed -n 's/^.*guess=\([^&]*\).*$/\1/p' | sed 's/%20/ /g')
 selected_city=$(echo "$POST_DATA" | sed -n 's/^.*city=\([^&]*\).*$/\1/p' | sed 's/%20/ /g')
+username=$(echo "$POST_DATA" | sed -n 's/^.*username=\([^&]*\).*$/\1/p' | sed 's/%20/ /g')
 
-# Function to render the HTML form
+# Function to render the HTML form for submitting a guess
 render_form() {
     # Load city data and select a random city
     load_cities
@@ -44,10 +65,14 @@ render_form() {
     <body>
         <h1>Welcome to the Weather Guessing Game!</h1>
         <p>Guess the current temperature in <b>$city</b>.</p>
-        
+
         <form action='/cgi-bin/Weathergame.sh' method='post'>
+            <label for='username'>Enter Your Name:</label>
+            <input type='text' id='username' name='username' required><br><br>
+            
             <label for='guess'>Your Guess (°C):</label>
-            <input type='number' id='guess' name='guess' step='any' required>
+            <input type='number' id='guess' name='guess' step='any' required><br><br>
+
             <input type='hidden' name='city' value='$city'>
             <input type='submit' value='Submit Guess'>
         </form>
@@ -59,12 +84,6 @@ render_form() {
 if [ -z "$guess" ]; then
     render_form
     exit 0
-fi
-
-# Handle the case where an invalid or empty guess is submitted
-if [ -z "$guess" ]; then
-    echo "<h1>Error</h1><p>Please provide a valid guess.</p>"
-    exit 1
 fi
 
 # Validate the guess input
@@ -93,13 +112,21 @@ if [[ "$guess" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
     # Calculate the difference between the guess and actual temperature
     difference=$(echo "$actual_temp - $guess" | bc)
     abs_diff=$(echo "$difference" | awk '{print ($1 < 0) ? -$1 : $1}')
-    
+
+    # Save the result to the leaderboard
+    echo "$username,$selected_city,$guess,$actual_temp,$abs_diff" >> "$LEADERBOARD_FILE"
+
     # Display the result of the game
     if (( $(echo "$abs_diff <= 3" | bc -l) )); then
         echo "<h1>Correct!</h1><p>The actual temperature in $selected_city was $actual_temp°C.</p>"
     else
         echo "<h1>Wrong Guess!</h1><p>Your guess was off by $abs_diff°C. The correct temperature was $actual_temp°C in $selected_city.</p>"
     fi
+
+    # Display the leaderboard, sorted by the closest guesses
+    display_leaderboard
+
+    # Replay and Exit buttons
     echo "
     <form action='/cgi-bin/Weathergame.sh' method='post'>
         <input type='submit' value='Replay'>
@@ -107,8 +134,7 @@ if [[ "$guess" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
 
     <form action='/index.html' method='get'>
         <input type='submit' value='Exit'>
-    </form>
-"
+    </form>"
 else
     # If the guess is invalid
     echo "<h1>Invalid Input</h1><p>Please enter a valid number for your guess.</p>"
