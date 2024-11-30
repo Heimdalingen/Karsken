@@ -3,7 +3,7 @@
 $host = 'localhost';  // MariaDB host, usually localhost
 $username = 'jesper';   // Your MariaDB username
 $password = 'jesper';       // Your MariaDB password
-$dbname = 'login_system';  // The database name
+$dbname = 'logininfo';  // The database name
 
 // Create a connection to MariaDB
 $conn = new mysqli($host, $username, $password, $dbname);
