@@ -1,0 +1,7 @@
+Heimdal,Alesund,3,10.0,7.0
+Heimdal,Alesund,3,10.0,7.0
+Heimdal,Haugesund,2,9.6,7.6
+Chanya,Moss,2,7.8,5.8
+Jepser,Drammen,6,7.1,1.1
+Chanya,Moss,7,7.8,.8
+Chanya,Moss,7,7.8,.8
