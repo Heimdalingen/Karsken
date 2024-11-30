@@ -127,6 +127,7 @@ render_form() {
                 margin-top: 30px;
             }
 
+            /* Styling for the leaderboard table */
             table {
                 margin-top: 20px;
                 width: 80%;
@@ -228,3 +229,19 @@ if [[ "$guess" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
 
     # Replay and Exit buttons
     echo "
+    <form action='/cgi-bin/Weatherg    
+    # Replay and Exit buttons
+    echo "
+    <form action='/cgi-bin/Weathergame.sh' method='post'>
+        <input type='submit' value='Replay'>
+    </form>
+
+    <form action='/index.html' method='get'>
+        <input type='submit' value='Exit'>
+    </form>"
+
+else
+    # If the guess is invalid
+    echo "<h1>Invalid Input</h1><p>Please enter a valid number for your guess.</p>"
+fi
+
