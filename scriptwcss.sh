@@ -28,7 +28,7 @@ display_leaderboard() {
         # Sort the leaderboard by the difference (5th column), in ascending order
         sorted_scores=$(sort -t',' -k5n "$LEADERBOARD_FILE")
         
-        echo "<table border='1'><tr><th>Username</th><th>City</th><th>Guess (°C)</th><th>Actual Temp (°C)</th><th>Difference (°C)</th></tr>"
+        echo "<table><tr><th>Username</th><th>City</th><th>Guess (°C)</th><th>Actual Temp (°C)</th><th>Difference (°C)</th></tr>"
         while IFS=',' read -r username city guess actual_temp difference; do
             echo "<tr><td>$username</td><td>$city</td><td>$guess</td><td>$actual_temp</td><td>$difference</td></tr>"
         done <<< "$sorted_scores"
@@ -87,7 +87,8 @@ render_form() {
                 padding: 20px;
                 border-radius: 10px;
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                width: 300px;
+                width: 320px;
+                margin: 20px;
             }
 
             label {
@@ -130,6 +131,10 @@ render_form() {
                 margin-top: 20px;
                 width: 80%;
                 border-collapse: collapse;
+                background-color: #fff;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
             }
 
             table, th, td {
@@ -139,6 +144,15 @@ render_form() {
             th, td {
                 padding: 10px;
                 text-align: center;
+            }
+
+            th {
+                background-color: #3498db;
+                color: white;
+            }
+
+            tr:nth-child(even) {
+                background-color: #ecf0f1;
             }
 
             footer {
@@ -214,14 +228,3 @@ if [[ "$guess" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
 
     # Replay and Exit buttons
     echo "
-    <form action='/cgi-bin/Weathergame.sh' method='post'>
-        <input type='submit' value='Replay'>
-    </form>
-
-    <form action='/index.html' method='get'>
-        <input type='submit' value='Exit'>
-    </form>"
-else
-    # If the guess is invalid
-    echo "<h1>Invalid Input</h1><p>Please enter a valid number for your guess.</p>"
-fi
