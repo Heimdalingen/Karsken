@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Guessing Game</title>
+    <!-- Link to your external CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Weather Guessing Game!</h1>
+        <p>Can you guess the current temperature in the selected city?</p>
+    </header>
+    
+    <!-- Form for user to enter their guess -->
+    <section class="form-section">
+        <form action="/cgi-bin/Weathergame.sh" method="post">
+            <label for="username">Enter Your Name:</label>
+            <input type="text" id="username" name="username" required><br><br>
+            
+            <label for="guess">Your Guess (°C):</label>
+            <input type="number" id="guess" name="guess" step="any" required><br><br>
+
+            <label for="city">Select a City:</label>
+            <select id="city" name="city" required>
+                <!-- This part will be dynamically populated by your script -->
+                <option value="Oslo">Oslo</option>
+                <option value="Bergen">Bergen</option>
+                <option value="Stavanger">Stavanger</option>
+                <!-- Add more cities as necessary -->
+            </select><br><br>
+
+            <input type="submit" value="Submit Guess">
+        </form>
+    </section>
+
+    <!-- Leaderboard Section -->
+    <section class="leaderboard-section">
+        <h2>Leaderboard</h2>
+        <div id="leaderboard">
+            <!-- This part will be dynamically filled by your script -->
+            <table id="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>City</th>
+                        <th>Guess (°C)</th>
+                        <th>Actual Temp (°C)</th>
+                        <th>Difference (°C)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Scores will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Buttons for replay and exit -->
+    <footer>
+        <form action="/cgi-bin/Weathergame.sh" method="post">
+            <input type="submit" value="Replay">
+        </form>
+
+        <form action="/index.html" method="get">
+            <input type="submit" value="Exit">
+        </form>
+    </footer>
+</body>
+</html>
