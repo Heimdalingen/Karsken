@@ -1,0 +1,5 @@
+#Husk å lage en output file for alle kodene som vises i scripten
+#Husk å skriv riktig directory path 
+#Crontab script: 
+*/30 * * * * /home/chanyas/Documents/cronweather/crontweather.sh >> /home/chanyas/Documents/c> #for 30min
+* * * * * /home/chanyas/Documents/cronweather/check_apache.sh >> /home/chanyas/Documents/cron> #for apache
