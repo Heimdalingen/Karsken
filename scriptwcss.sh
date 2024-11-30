@@ -28,7 +28,7 @@ display_leaderboard() {
         # Sort the leaderboard by the difference (5th column), in ascending order
         sorted_scores=$(sort -t',' -k5n "$LEADERBOARD_FILE")
         
-        echo "<table><tr><th>Username</th><th>City</th><th>Guess (°C)</th><th>Actual Temp (°C)</th><th>Difference (°C)</th></tr>"
+        echo "<table border='1'><tr><th>Username</th><th>City</th><th>Guess (°C)</th><th>Actual Temp (°C)</th><th>Difference (°C)</th></tr>"
         while IFS=',' read -r username city guess actual_temp difference; do
             echo "<tr><td>$username</td><td>$city</td><td>$guess</td><td>$actual_temp</td><td>$difference</td></tr>"
         done <<< "$sorted_scores"
@@ -53,7 +53,7 @@ render_form() {
     city=$(shuf -e "${!cities[@]}" -n 1)
     read lat lon <<<"${cities[$city]}"
 
-    # Render the HTML form with inline CSS
+    # Render the HTML form
     echo "
     <!DOCTYPE html>
     <html lang='en'>
@@ -61,106 +61,102 @@ render_form() {
         <meta charset='UTF-8'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
         <title>Weather Guessing Game</title>
-
-        <!-- Inline CSS -->
         <style>
-            body {
-                font-family: 'Poppins', sans-serif;
-                background-color: #ecf0f1;
-                margin: 0;
-                padding: 0;
-                text-align: center;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-            }
+        /* Import Google Font - Poppins */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
-            h1 {
-                font-size: 2.5em;
-                color: #2c3e50;
-            }
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
-            form {
-                background-color: #fff;
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                width: 320px;
-                margin: 20px;
-            }
+        /* Header */
+        h1 {
+            font-size: 2.5em;
+            margin-top: 20px;
+            color: #2c3e50;
+        }
 
-            label {
-                font-size: 1.2em;
-                margin: 10px 0;
-            }
+        /* Instructions Heading */
+        h2 {
+            font-size: 1.8em;
+            color: #34495e;
+            margin-top: 30px;
+        }
 
-            input[type='text'], input[type='number'] {
-                font-size: 1.2em;
-                padding: 8px;
-                width: 100%;
-                margin-bottom: 15px;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-            }
+        /* Paragraphs */
+        p {
+            font-size: 1.2em;
+            margin: 20px auto;
+            max-width: 600px;
+            line-height: 1.6;
+        }
 
-            input[type='submit'] {
-                font-size: 1.2em;
-                font-weight: 600;
-                color: white;
-                background-color: #3498db;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 5px;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            }
+        /* List Items */
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
 
-            input[type='submit']:hover {
-                background-color: #2980b9;
-            }
+        ul li {
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
 
-            h2 {
-                font-size: 1.8em;
-                color: #34495e;
-                margin-top: 30px;
-            }
+        /* Button */
+        input[type='submit'] {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: white;
+            background-color: #3498db;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
-            /* Styling for the leaderboard table */
-            table {
-                margin-top: 20px;
-                width: 80%;
-                border-collapse: collapse;
-                background-color: #fff;
-                border-radius: 10px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                margin-bottom: 20px;
-            }
+        input[type='submit']:hover {
+            background-color: #2980b9;
+        }
 
-            table, th, td {
-                border: 1px solid #ccc;
-            }
+        /* Form and table styling */
+        form, table {
+            margin: 20px auto;
+            width: 80%;
+            max-width: 800px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
 
-            th, td {
-                padding: 10px;
-                text-align: center;
-            }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-            th {
-                background-color: #3498db;
-                color: white;
-            }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
 
-            tr:nth-child(even) {
-                background-color: #ecf0f1;
-            }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
 
-            footer {
-                margin-top: 40px;
-                font-size: 0.9em;
-                color: #7f8c8d;
-            }
+        footer {
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
         </style>
     </head>
     <body>
@@ -229,9 +225,6 @@ if [[ "$guess" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
 
     # Replay and Exit buttons
     echo "
-    <form action='/cgi-bin/Weatherg    
-    # Replay and Exit buttons
-    echo "
     <form action='/cgi-bin/Weathergame.sh' method='post'>
         <input type='submit' value='Replay'>
     </form>
@@ -244,4 +237,3 @@ else
     # If the guess is invalid
     echo "<h1>Invalid Input</h1><p>Please enter a valid number for your guess.</p>"
 fi
-
