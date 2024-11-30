@@ -1,8 +1,8 @@
 <?php
 // Database connection details for MariaDB 
 $host = 'localhost';  // MariaDB host, usually localhost
-$username = 'root';   // Your MariaDB username
-$password = '';       // Your MariaDB password
+$username = 'jesper';   // Your MariaDB username
+$password = 'jesper';       // Your MariaDB password
 $dbname = 'login_system';  // The database må endres
 
 // Create a connection to MariaDB
@@ -29,10 +29,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Execute the prepared statement
     if ($stmt->execute()) {
         echo "New record created successfully. Preferred Temperature Unit: $temperature";
+        // Redirect to another page 
+        header ("Location: endre.her"); exit; } else { echo "Error: " . $stmt->error; 
     } else {
         echo "Error: " . $stmt->error;
     }
-
+{ 
     // Close the prepared statement
     $stmt->close();
 }
