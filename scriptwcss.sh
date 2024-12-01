@@ -2,7 +2,9 @@
 echo "Content-type: text/html"
 echo ""
 
-# File to store leaderboard data
+# Path to the Leaderboard Data. 
+# the file stores the leaderbord data(Username, The city quessed, the quessed temperatur, the actual temperature and the difference between the quessed and actual temperatur.
+# show txt file during oral exam)
 LEADERBOARD_FILE="/var/www/eksamen/Weather_game/scores.txt"
 
 # Function to fetch the current temperature using the Open Meteo API
@@ -25,15 +27,20 @@ load_cities() {
 display_leaderboard() {
     echo "<h2>Leaderboard</h2>"
     if [ -f "$LEADERBOARD_FILE" ]; then
-        # Sort the leaderboard by the difference (5th column), in ascending order
+        # Sort the leaderboard by the difference (5th column), in ascending order, -t',' tells sort to usa a comma as the delimiter(since the file is comma-seperated.)'
+        #-k5n tells sort to sort based on the 5h column(the difference numerically.)
+        # this ensures that the player with the closest quess(smallest difference)appears first on the leaderboard.
         sorted_scores=$(sort -t',' -k5n "$LEADERBOARD_FILE")
-        
+        # after sorting, the script generates a html table to showcase the scores, Each row contains.
+        #(Username. City, Quessed temperatur, Actual temperatur and the Difference between the quess and the actual temperatur.)
         echo "<table border='1'><tr><th>Username</th><th>City</th><th>Guess (°C)</th><th>Actual Temp (°C)</th><th>Difference (°C)</th></tr>"
         while IFS=',' read -r username city guess actual_temp difference; do
+        # The "while" loop reads each line of the sorted scores and outputs it as a table row.
             echo "<tr><td>$username</td><td>$city</td><td>$guess</td><td>$actual_temp</td><td>$difference</td></tr>"
         done <<< "$sorted_scores"
         echo "</table>"
     else
+    # If the leaderboard file (scores.txt) does not exist, the script displays a message
         echo "<p>No leaderboard data available.</p>"
     fi
 }
@@ -236,4 +243,4 @@ if [[ "$guess" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
 else
     # If the guess is invalid
     echo "<h1>Invalid Input</h1><p>Please enter a valid number for your guess.</p>"
-fi
+fi 
