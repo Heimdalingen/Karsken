@@ -1,8 +1,8 @@
 <?php
 // Database information, so it connects with the database
-$host = 'localhost';  // MariaDB host, 
-$username = 'jesper';   // Your MariaDB username
-$password = 'jesper';       // Your MariaDB password
+$host = 'localhost';  // MariaDB host 
+$username = 'jesper';   // database username
+$password = 'jesper';       // database password
 $dbname = 'logininfo';  // The database name
 
 // Creates a connection to MariaDB
@@ -10,7 +10,7 @@ $conn = new mysqli($host, $username, $password, $dbname);
 
 // Checks the connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die("Connection failed: " . $conn->connect_error); // if it fails, error will show
 }
 
 // Checks if the form is submitted
@@ -28,16 +28,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Executes the prepared statement
     if ($send->execute()) {
-        echo "New record created successfully. Preferred Temperature Unit: $temperature";
+        echo "New record created successfully. Preferred Temperature Unit: $temperature"; // is this needed?
         
-        // Set cookie with user info in header
+        // Set cookie with user info in header, dosnt work
         setcookie("user", $username, "/");
 
-        // Redirect to another page
-        header("Location: videre.html");
+        // Redirect to another page, sends to the game
+        header("Location: videre.html"); // directs to game, change file
         exit;
     } else {
-        echo "Error: " . $send->error;
+        echo "Error: " . $send->error; // error message if it doesnt send
     }
 
     // Close the prepared statement
